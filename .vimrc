@@ -16,6 +16,7 @@ set autoindent  " set auto-indenting on
 " Display
 set ruler   " show the cursor position
 set nowrap  " don't warp display
+set cursorline " highlight current line
 
 set laststatus=2
 set encoding=utf-8
@@ -42,25 +43,114 @@ filetype indent on    " enable language-depenent indentation
 syntax enable
 set background=dark
 set t_Co=256
-colorscheme elflord
 highlight clear SignColumn
 
 highlight RedundantSpaces ctermbg=red
 match RedundantSpaces /\s\+$\| \+\ze\t\|\t/
 
 set number  " line numbers
-set scrolloff=5
+set scrolloff=10 " 10 lines top and bottom before scrolling
 set hidden
-
 set nobackup
+set noswapfile
+
+set mouse=a
+
+" Trigger `autoread` when files changes on disk
+" https://unix.stackexchange.com/questions/149209/refresh-changed-content-of-file-opened-in-vim/383044#383044
+" https://vi.stackexchange.com/questions/13692/prevent-focusgained-autocmd-running-in-command-line-editing-mode
+autocmd FocusGained,BufEnter,CursorHold,CursorHoldI * if mode() != 'c' | checktime | endif
+" Notification after file change
+" https://vi.stackexchange.com/questions/13091/autocmd-event-for-autoread
+autocmd FileChangedShellPost *
+  \ echohl WarningMsg | echo "File changed on disk. Buffer reloaded." | echohl None
+
+" KEY BINDINGS
+" toggle line numbers w/ f3
+noremap <F3> :set invnumber<CR>
+inoremap <F3> <C-O>:set invnumber<CR>
 
 set pastetoggle=<F2>
-autocmd BufReadPost,FileReadPost,BufNewFile,BufEnter * call system("tmux rename-window 'vim|" . expand("%:t") . "'")
+" sane uparrow/downarrow with wrapped lines
+nmap j gj
+nmap k gk
+
+" use leader f to open fzf, t for tags
+nmap <Leader>f :Files<Return>
+nmap <Leader>t :Tags<Return>
+nmap <Leader>p :PrettierAsync<Return>
+nmap <Leader>e :NERDTreeFind<Return>
+nmap <Leader>n :NERDTreeToggle<Return>
+nmap <Leader><Tab> :b#<Return>
+nmap <Leader>g :Ag 
+
+" disable ex mode
+:map Q <Nop>
+
+" split handling
+" more natural split handling
+set splitbelow
+set splitright
+" ctrl hjkl for split navigation
+nnoremap <C-H> <C-W><C-H>
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
 
 
+" PLUGIN CONFIGS
+" vim-plug stuff
+call plug#begin()
+Plug '/usr/local/opt/fzf'
+Plug 'junegunn/fzf.vim'
+Plug 'prettier/vim-prettier', {
+  \ 'do': 'yarn install',
+  \ 'branch': 'release/1.x',
+  \ 'for': [
+    \ 'javascript',
+    \ 'typescript',
+    \ 'css',
+    \ 'less',
+    \ 'scss',
+    \ 'json',
+    \ 'graphql',
+    \ 'markdown',
+    \ 'vue',
+    \ 'lua',
+    \ 'php',
+    \ 'python',
+    \ 'ruby',
+    \ 'html',
+    \ 'swift' ] }
+Plug 'leafgarland/typescript-vim'
+Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'Quramy/tsuquyomi'
+Plug 'airblade/vim-gitgutter'
+Plug 'danilo-augusto/vim-afterglow'
+Plug 'scrooloose/nerdtree'
+Plug 'tpope/vim-fugitive'
+call plug#end()
+
+
+" afterglow options
+colorscheme afterglow
+let g:afterglow_blackout=1
+
+"airline config
+set noshowmode " since using airline
 let g:airline_powerline_fonts = 1
-set ttimeoutlen=10
-"Remove all trailing whitespace by pressing F5
-nnoremap <F5> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar><CR>
-execute pathogen#infect()
+let g:airline_skip_empty_sections = 1
+let g:airline_section_y = ''
 
+" disable prettier quickfix auto
+let g:prettier#quickfix_enabled = 0
+
+" fzf config
+" use fd so that gitignore is used on filenames shown
+let $FZF_DEFAULT_COMMAND='fd --type f'
+
+" coc config for autocomplete
+source /Users/jfunke/.vimcoc
+let g:tsuquyomi_disable_quickfix = 1
