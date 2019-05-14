@@ -65,12 +65,17 @@ autocmd FocusGained,BufEnter,CursorHold,CursorHoldI * if mode() != 'c' | checkti
 autocmd FileChangedShellPost *
   \ echohl WarningMsg | echo "File changed on disk. Buffer reloaded." | echohl None
 
+" big history
+set history=10000
+
 " KEY BINDINGS
 " toggle line numbers w/ f3
-noremap <F3> :set invnumber<CR>
-inoremap <F3> <C-O>:set invnumber<CR>
+noremap <F4> :set invnumber<CR>
+inoremap <F4> <C-O>:set invnumber<CR>
+nmap <F2> :NERDTreeToggle<Return>
+nmap <F3> :NERDTreeFind<Return>
 
-set pastetoggle=<F2>
+set pastetoggle=<F5>
 " sane uparrow/downarrow with wrapped lines
 nmap j gj
 nmap k gk
@@ -79,8 +84,6 @@ nmap k gk
 nmap <Leader>f :Files<Return>
 nmap <Leader>t :Tags<Return>
 nmap <Leader>p :PrettierAsync<Return>
-nmap <Leader>e :NERDTreeFind<Return>
-nmap <Leader>n :NERDTreeToggle<Return>
 nmap <Leader><Tab> :b#<Return>
 nmap <Leader>g :Ag 
 
