@@ -83,9 +83,11 @@ nmap k gk
 " use leader f to open fzf, t for tags
 nmap <Leader>f :Files<Return>
 nmap <Leader>t :Tags<Return>
-nmap <Leader>p :PrettierAsync<Return>
+nmap <Leader>p :Prettier<Return>
 nmap <Leader><Tab> :b#<Return>
 nmap <Leader>g :Ag 
+nmap <Leader>b :Buffers<Return>
+nmap <Leader>` :TsuQuickFix<Return>
 
 " disable ex mode
 :map Q <Nop>
@@ -134,21 +136,28 @@ Plug 'airblade/vim-gitgutter'
 Plug 'danilo-augusto/vim-afterglow'
 Plug 'scrooloose/nerdtree'
 Plug 'tpope/vim-fugitive'
+Plug 'mhinz/vim-startify'
 call plug#end()
 
 
 " afterglow options
+let g:afterglow_blackout=0
 colorscheme afterglow
-let g:afterglow_blackout=1
 
 "airline config
 set noshowmode " since using airline
 let g:airline_powerline_fonts = 1
 let g:airline_skip_empty_sections = 1
 let g:airline_section_y = ''
+let g:airline#extensions#branch#format = 1
+
 
 " disable prettier quickfix auto
+let g:prettier#autoformat = 1
+let g:prettier#exec_cmd_async = 1
 let g:prettier#quickfix_enabled = 0
+autocmd BufWritePre,TextChanged,InsertLeave *.js,*.ts PrettierAsync
+
 
 " fzf config
 " use fd so that gitignore is used on filenames shown
